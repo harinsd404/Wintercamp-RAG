@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import chromadb
-import pymupdf4llm
 import tiktoken
 from sentence_transformers import SentenceTransformer
 from chromadb import Documents, EmbeddingFunction, Embeddings
@@ -49,19 +48,19 @@ def upload(request: UploadRequest):
 
 
 
-    collection_name = 'samsung_collection'
+    collection_name = 'github_collection'
     try:
         chroma_client.delete_collection(name=collection_name)
     except:
         pass
 
-    samsung_collection = chroma_client.create_collection(name=collection_name,
+    github_collection = chroma_client.create_collection(name=collection_name,
                                                          embedding_function=MyEmbeddingFunction())
     id_list = []
     for index in range(len(chunk_list)):
         id_list.append(f'{index}')
 
-    samsung_collection.add(documents=chunk_list, ids=id_list)
+    github_collection.add(documents=chunk_list, ids=id_list)
 
     return {"ok": True, "chunks": len(chunk_list)}
 
@@ -70,9 +69,9 @@ class QueryRequest(BaseModel):
 @app.post("/answer")
 def ask(request: QueryRequest):
     global embedding_model, chroma_client
-    collection_name = 'samsung_collection'
-    samsung_collection = chroma_client.get_collection(name=collection_name, Embedding_Function=MyEmbeddingFunction())
-    retrieved_doc = samsung_collection.query(query_texts=request.query, n_results=3)
+    collection_name = 'github_collection'
+    github_collection = chroma_client.get_collection(name=collection_name, embedding_function=MyEmbeddingFunction())
+    retrieved_doc = github_collection.query(query_texts=request.query, n_results=3)
     refer = retrieved_doc['documents'][0]
 
     url = "http://172.17.0.5:11434/api/generate"
