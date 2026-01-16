@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  rag_server:
+    build:
+      context: ./rag_server
+    container_name: rag_server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./rag_server/chroma_data:/app/chroma_data
+    networks:
+      - rag-network
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OLLAMA_URL=http://ollama:11434
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rag_server
+    networks:
+      - rag-network
+    environment:
+      - RAG_SERVER_URL=http://rag_server:8888
+      - PYTHONUNBUFFERED=1
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    networks:
+      - rag-network
+
+networks:
+  rag-network:
+    driver: bridge
