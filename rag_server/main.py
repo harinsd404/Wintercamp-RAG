@@ -78,14 +78,23 @@ def ask(request: QueryRequest):
 
     payload = {
         "model": "gemma3:1b",
-        "prompt": f'''You are a business analysis expert in Korea.
-                    Please find answers to users' questions in our *Context*. If not, please direct them to the company.
-                    Please organize your answers so users can understand them.
-            *Context*:
-            {refer}
-            *Question*: {request.query}
+        "prompt": f'''You are a GitHub repository assistant.
 
-            Answer in Korean:''',
+            Your role:
+            - Answer questions using ONLY the provided Context.
+            - The Context comes from a GitHub repository (code, README, directory structure, issues, etc).
+            - Explain code and project structure clearly for developers.
+            - If the answer is NOT found in the Context, say clearly that the information is not available in the repository.
+            - Do NOT guess or hallucinate.
+            - When helpful, mention file names or directories.
+            
+            Context:
+            {refer}
+            
+            Question:
+            {request.query}
+            
+            Answer in Korean.''',
         "stream": False
     }
 
