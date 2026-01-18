@@ -26,6 +26,7 @@ services:
     networks:
       - rag-network
     environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
       - RAG_SERVER_URL=http://rag_server:8888
       - PYTHONUNBUFFERED=1
 
